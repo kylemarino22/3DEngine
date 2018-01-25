@@ -166,6 +166,10 @@ public class draw extends JPanel implements ActionListener, model, KeyListener, 
 
         g2.drawString("pitch: " + (cam.angle.p * 180/Math.PI), 0,11);
         g2.drawString("yaw: " + (cam.angle.y * 180/Math.PI), 0,22);
+
+        g2.drawString("x: " + (cam.center.x), 0,44);
+        g2.drawString("y: " + (cam.center.y), 0,55);
+        g2.drawString("z: " + (cam.center.z), 0,66);
         incrementKeys();
         resetMouse();
         loaded.clear();
@@ -235,11 +239,11 @@ public class draw extends JPanel implements ActionListener, model, KeyListener, 
 
 
 
-        point3 center = new point3(12,15,-5);
-        Euler angle = new Euler(0,0,0);
+        point3 center = new point3(11.5,15,-5);
+        Euler angle = new Euler(90,0,0);
 
-        point3 center2 = new point3(18,15,-5);
-        Euler angle2 = new Euler(0,0,0);
+        point3 center2 = new point3(18.5,15,-5);
+        Euler angle2 = new Euler(90,0,0);
 
         point3 center3 = new point3(18,15,-10);
         Euler angle3 = new Euler(0,0,0);
@@ -342,7 +346,18 @@ public class draw extends JPanel implements ActionListener, model, KeyListener, 
             int deltay = y - 500;
 
             cam.angle.incrementYaw(deltax * 0.11);
-            cam.angle.incrementPitch(-deltay * 0.16);
+
+            System.out.println(cam.angle.p);
+            if(cam.angle.p * 180/Math.PI > 90){
+                cam.angle.setPitch(89);
+            }
+            else if(cam.angle.p * 180/Math.PI < -90){
+                cam.angle.setPitch(-89);
+            }
+            else{
+                cam.angle.incrementPitch(-deltay * 0.16);
+            }
+
         }
 
 
