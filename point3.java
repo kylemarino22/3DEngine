@@ -13,6 +13,7 @@ public class point3 {
     public point3 clone(){
         return new point3(x,y,z);
     }
+
     public String toString(){
         if(0.001 > Math.abs(x)) x = 0;
         if(0.001 > Math.abs(y)) y = 0;

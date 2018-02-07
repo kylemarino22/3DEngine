@@ -6,6 +6,9 @@ public class point2 {
         this.x = x;
         this.y = y;
     }
+    public point2 clone(){
+        return new point2(x,y);
+    }
 
     public String toString(){
         if(0.001 > Math.abs(x)) x = 0;

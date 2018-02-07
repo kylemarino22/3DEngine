@@ -265,4 +265,57 @@ public class Render extends draw{
 
     }
 
+    private ArrayList<projTri> orderTri (ArrayList<projTri>, ArrayList<Tri>){
+
+
+
+    }
+
+    private ArrayList<point2> isInside(projTri proj1, projTri proj2) {
+
+        ArrayList<point2> temp = proj2.cpyArr();
+        point2 centroid = new point2(proj1.pointArray[0].x + proj1.pointArray[1].x + proj1.pointArray[2].x,
+                                     proj1.pointArray[0].y + proj1.pointArray[1].y + proj1.pointArray[2].y);
+
+    for(int i = 0; i < 3; i++){
+
+        double slope = (proj1.pointArray[i].y - proj1.pointArray[(i+1)%3].y)/
+                       (proj1.pointArray[i].x - proj1.pointArray[(i+1)%3].x);
+
+        if(centroid.y > slope * (centroid.x - proj1.pointArray[i].x) + proj1.pointArray[i].y){
+
+            for(int j = 0; j < temp.size(); j++){
+                //operator is switched to check if point is outside triangle region
+                if(-0.01 < slope * (temp.get(j).x - proj1.pointArray[i].x) + proj1.pointArray[i].y - temp.get(j).y){
+                    //the point is outside the line
+                    temp.remove(j);
+                    j--;
+                }
+            }
+        }
+        else{
+
+            for(int j = 0; j < temp.size(); j++){
+                //operator is switched to check if point is outside triangle region
+                if(0.01 > slope * (temp.get(j).x - proj1.pointArray[i].x) + proj1.pointArray[i].y - temp.get(j).y){
+                    //the point is outside the line
+                    temp.remove(j);
+                    j--;
+                }
+            }
+
+        }
+        return temp;
+    }
+
+
+    }
+    private ArrayList<point2> clippedPoints(projTri proj1, projTri proj2){
+
+    }
+
+    private boolean compareTri(Tri tri1, Tri tri2){
+
+    }
+
 }

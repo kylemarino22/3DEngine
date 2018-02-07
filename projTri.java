@@ -1,4 +1,5 @@
 import java.awt.*;
+import java.util.ArrayList;
 
 public class projTri {
 
@@ -10,6 +11,15 @@ public class projTri {
         pointArray[1] = b;
         pointArray[2] = c;
         triColor = d;
+    }
+
+    public ArrayList<point2> cpyArr(){
+        ArrayList<point2> tempCpy = new ArrayList<>();
+        tempCpy.add(pointArray[0].clone());
+        tempCpy.add(pointArray[1].clone());
+        tempCpy.add(pointArray[2].clone());
+
+        return tempCpy;
     }
 
     public String toString(){
