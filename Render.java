@@ -310,7 +310,135 @@ public class Render extends draw{
 
 
     }
+
     private ArrayList<point2> clippedPoints(projTri proj1, projTri proj2){
+        ArrayList<point2> originalPoints = proj2.cpyArr();
+        ArrayList<point2> newPoints = new ArrayList<>();
+
+        point2 cent1 = new point2((proj1.pointArray[0].x + proj1.pointArray[1].x + proj1.pointArray[2].x)/3,
+                                  (proj1.pointArray[0].y + proj1.pointArray[1].y + proj1.pointArray[2].y)/3);
+
+        for(int i = 0; i < 3; i++){
+
+            //stores array location of outside points
+            ArrayList<Integer> pointsOutside = new ArrayList<>();
+            //slope of two points from proj1
+            double slope = (proj1.pointArray[i].y - proj1.pointArray[(i+1)%3].y)/(proj1.pointArray[i].x - proj1.pointArray[(i+1)%3].x);
+
+
+            if(cent1.y > slope * (cent1.x - proj1.pointArray[i].x) + proj1.pointArray[i].y){
+
+                //centroid is included from region
+
+                for(int j = 0; j < proj2.pointArray.length; j++){
+                    //operator is switched to check if point is outside triangle region
+                    if(-0.1 < slope * (proj2.pointArray[j].x - proj1.pointArray[i].x) + proj1.pointArray[i].y - proj2.pointArray[j].y){
+                        //the point is outside the line
+                        pointsOutside.add(j);
+                    }
+                }
+            }
+            else{
+                //centroid is excluded from region
+                for(int j = 0; j < proj2.pointArray.length; j++){
+                    //operator is switched to check if point is outside triangle region
+                    if(0.1 > slope * (proj2.pointArray[j].x - proj1.pointArray[i].x) + proj1.pointArray[i].y - proj2.pointArray[j].y){
+                        //the point is outside the line
+                        pointsOutside.add(new Integer(j));
+                    }
+                }
+            }
+
+            if(pointsOutside.size() > 0){
+                //one point is outside or two are outside.
+
+
+                int shift = pointsOutside.size() - 1;
+
+
+                // original plus +/- 1
+                //original -1,  original+1 plus 2
+
+                double tempSlope = (proj2.pointArray[pointsOutside.get(0).intValue()].y - proj2.pointArray[(pointsOutside.get(0).intValue() +2) % proj2.pointArray.length].y) /
+                                   (proj2.pointArray[pointsOutside.get(0).intValue()].x - proj2.pointArray[(pointsOutside.get(0).intValue() +2) % proj2.pointArray.length].x);
+
+                if(tempSlope > 1000){
+                    tempSlope = 1000;
+                }
+                else if(tempSlope < -1000){
+                    tempSlope = -1000;
+                }
+                var x = ((slope1 * proj1[i].x) - ((tempSlope1 * proj2[pointsOutside[0]].x) + (proj1[i].y - proj2[pointsOutside[0]].y))) / (slope1 - tempSlope1);
+
+                var y = slope1 * (x - proj1[i].x) + proj1[i].y;
+
+                //check if the point of intersection is within x coords of proj1
+
+                var linex1;
+                var linex2;
+                if(proj1[i].x < proj1[(i+1)%3].x){
+                    linex1 = proj1[i].x;
+                    linex2 = proj1[(i+1)%3].x;
+                }
+                else{
+                    linex2 = proj1[i].x;
+                    linex1 = proj1[(i+1)%3].x;
+                }
+
+                if(linex1 < x && x < linex2){
+                    //it is within
+                    //push coord to newPoints
+                    newPoints.push(new point2D(round(x,3), round(y,3)));
+                }
+
+                // projArray
+
+                tempSlope1 = (proj2[(pointsOutside[0] + shift) % 3].y - proj2[(pointsOutside[0] + 1 + shift) % 3].y) /
+                        (proj2[(pointsOutside[0] + shift) % 3].x - proj2[(pointsOutside[0] + 1 + shift) % 3].x);
+
+                if(tempSlope1 == Number.POSITIVE_INFINITY){
+                    tempSlope1 = 1000;
+                }
+                else if(tempSlope1 == Number.NEGATIVE_INFINITY){
+                    tempSlope1 = -1000;
+                }
+
+                var x2 = ((slope1 * proj1[i].x) - ((tempSlope1 * proj2[(pointsOutside[0] + shift) % 3].x) + (proj1[i].y - proj2[(pointsOutside[0] + shift) % 3].y))) / (slope1 - tempSlope1);
+
+                var y2 = slope1 * (x2 - proj1[i].x) + proj1[i].y;
+
+                if(linex1 < x2 && x2 < linex2){
+                    //it is within
+                    //push coord to newPoints
+                    newPoints.push(new point2D(round(x2,3), round(y2,3)));
+
+                }
+
+
+                if(pointsOutside.length == 1){
+                    pointsO.splice(pointsOutside[0], 1, 0);
+                }
+                else if(pointsOutside.length == 2){
+                    pointsO.splice(pointsOutside[0], 1, 0);
+                    pointsO.splice(pointsOutside[1], 1, 0);
+                }
+                for(var j = 0; j < pointsOutside.length; j++){
+                    pointsOutside.splice(0,1);
+                }
+
+                // printLog(newPoints);
+                // printLog(pointsO);
+            }
+
+        }
+
+    // for(var i = 2; i > -1; i--){
+    // 	if(pointsO[i] == 0){
+    // 		pointsO.splice(i, 1);
+    // 	}
+    // }
+
+	return newPoints;
 
     }
 
