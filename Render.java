@@ -267,6 +267,109 @@ public class Render extends draw{
 
     private ArrayList<projTri> orderTri (ArrayList<projTri>, ArrayList<Tri>){
 
+        //array of tris
+        //calculate tri projections
+        //projArray is an array of projectedTris
+        var projArray = [];
+        var finalArray = [];
+        for(var i = 0; i < arr.length; i++){
+            projArray[i] = new projectedTri(new point2D(), new point2D(), new point2D());
+
+            for(var j = 0; j <3; j++){
+                projArray[i].pointArray[j].x = simpleCalcXZ(arr[i].pointArray[j].x + center.x,
+                        arr[i].pointArray[j].z + center.z);
+            }
+
+            for(var j = 0; j <3; j++){
+                projArray[i].pointArray[j].y = simpleCalcYZ(arr[i].pointArray[j].y + center.y,
+                        arr[i].pointArray[j].z + center.z);
+            }
+
+        }
+
+
+
+        for(var i = 0; i < arr.length; i++){
+            for(var j = i; j< arr.length; j++){
+
+                // console.log(arr[i].color + " and " + arr[j].color);
+                if(j == i){
+                    continue;
+                }
+
+
+                var inside = isInside(projArray[i].pointArray, projArray[j].pointArray);
+
+                if(inside.length == 0){
+                    inside = isInside(projArray[j].pointArray, projArray[i].pointArray);
+                }
+
+                if(inside.length == 0){
+                    var points = clippedPoints(projArray[i].pointArray, projArray[j].pointArray);
+                    var testPoints = [];
+                    samePoints(points, projArray[i].pointArray, testPoints);
+
+
+
+                    if(points.length == 0|| testPoints.length == points.length){
+                        // console.log("no intersect");
+                        averageZ1 = averageZ(arr[i].pointArray[0].z,
+                                arr[i].pointArray[1].z,
+                                arr[i].pointArray[2].z);
+                        averageZ2 = averageZ(arr[j].pointArray[0].z,
+                                arr[j].pointArray[1].z,
+                                arr[j].pointArray[2].z);
+
+                        if(averageZ1 > averageZ2){
+
+
+                            continue;
+                        }
+                        else{
+
+                            var temp = arr[i];
+                            arr[i] = arr[j];
+                            arr[j] = temp;
+
+                            temp = projArray[i];
+                            projArray[i] = projArray[j];
+                            projArray[j] = temp;
+                            continue;
+                        }
+                    }
+
+                    samePoints(projArray[i].pointArray, projArray[j].pointArray,points);
+                    var result = new point2D(averageArray(points, 'x'),
+                            averageArray(points, 'y'));
+                    printLog(result);
+                    inside[0] = result;
+                }
+                else{
+                    printLog(inside);
+                }
+
+
+
+                var result = compareTri(arr[i],arr[j],inside[0],center);
+
+                if(result == 0){
+                    continue;
+                }
+                else{
+                    var temp = arr[i];
+                    arr[i] = arr[j];
+                    arr[j] = temp;
+
+                    temp = projArray[i];
+                    projArray[i] = projArray[j];
+                    projArray[j] = temp;
+                    continue;
+                }
+
+            }
+        }
+
+        return arr;
 
 
     }
@@ -275,41 +378,38 @@ public class Render extends draw{
 
         ArrayList<point2> temp = proj2.cpyArr();
         point2 centroid = new point2(proj1.pointArray[0].x + proj1.pointArray[1].x + proj1.pointArray[2].x,
-                                     proj1.pointArray[0].y + proj1.pointArray[1].y + proj1.pointArray[2].y);
+                proj1.pointArray[0].y + proj1.pointArray[1].y + proj1.pointArray[2].y);
 
-    for(int i = 0; i < 3; i++){
+        for (int i = 0; i < 3; i++) {
 
-        double slope = (proj1.pointArray[i].y - proj1.pointArray[(i+1)%3].y)/
-                       (proj1.pointArray[i].x - proj1.pointArray[(i+1)%3].x);
+            double slope = (proj1.pointArray[i].y - proj1.pointArray[(i + 1) % 3].y) /
+                    (proj1.pointArray[i].x - proj1.pointArray[(i + 1) % 3].x);
 
-        if(centroid.y > slope * (centroid.x - proj1.pointArray[i].x) + proj1.pointArray[i].y){
+            if (centroid.y > slope * (centroid.x - proj1.pointArray[i].x) + proj1.pointArray[i].y) {
 
-            for(int j = 0; j < temp.size(); j++){
-                //operator is switched to check if point is outside triangle region
-                if(-0.01 < slope * (temp.get(j).x - proj1.pointArray[i].x) + proj1.pointArray[i].y - temp.get(j).y){
-                    //the point is outside the line
-                    temp.remove(j);
-                    j--;
+                for (int j = 0; j < temp.size(); j++) {
+                    //operator is switched to check if point is outside triangle region
+                    if (-0.01 < slope * (temp.get(j).x - proj1.pointArray[i].x) + proj1.pointArray[i].y - temp.get(j).y) {
+                        //the point is outside the line
+                        temp.remove(j);
+                        j--;
+                    }
+                }
+            } else {
+
+                for (int j = 0; j < temp.size(); j++) {
+                    //operator is switched to check if point is outside triangle region
+                    if (0.01 > slope * (temp.get(j).x - proj1.pointArray[i].x) + proj1.pointArray[i].y - temp.get(j).y) {
+                        //the point is outside the line
+                        temp.remove(j);
+                        j--;
+                    }
                 }
             }
-        }
-        else{
-
-            for(int j = 0; j < temp.size(); j++){
-                //operator is switched to check if point is outside triangle region
-                if(0.01 > slope * (temp.get(j).x - proj1.pointArray[i].x) + proj1.pointArray[i].y - temp.get(j).y){
-                    //the point is outside the line
-                    temp.remove(j);
-                    j--;
-                }
-            }
-
         }
         return temp;
     }
 
-
-    }
 
     private ArrayList<point2> clippedPoints(projTri proj1, projTri proj2){
         ArrayList<point2> originalPoints = proj2.cpyArr();
@@ -368,63 +468,64 @@ public class Render extends draw{
                 else if(tempSlope < -1000){
                     tempSlope = -1000;
                 }
-                var x = ((slope1 * proj1[i].x) - ((tempSlope1 * proj2[pointsOutside[0]].x) + (proj1[i].y - proj2[pointsOutside[0]].y))) / (slope1 - tempSlope1);
+                double x = ((slope * proj1.pointArray[i].x) - ((tempSlope * proj2.pointArray[pointsOutside.get(0).intValue()].x) + (proj1.pointArray[i].y - proj2.pointArray[pointsOutside.get(0).intValue()].y))) / (slope - tempSlope);
 
-                var y = slope1 * (x - proj1[i].x) + proj1[i].y;
+                double y = slope * (x - proj1.pointArray[i].x) + proj1.pointArray[i].y;
 
                 //check if the point of intersection is within x coords of proj1
 
-                var linex1;
-                var linex2;
-                if(proj1[i].x < proj1[(i+1)%3].x){
-                    linex1 = proj1[i].x;
-                    linex2 = proj1[(i+1)%3].x;
+                double linex1;
+                double linex2;
+                if(proj1.pointArray[i].x < proj1.pointArray[(i+1)%3].x){
+                    linex1 = proj1.pointArray[i].x;
+                    linex2 = proj1.pointArray[(i+1)%3].x;
                 }
                 else{
-                    linex2 = proj1[i].x;
-                    linex1 = proj1[(i+1)%3].x;
+                    linex2 = proj1.pointArray[i].x;
+                    linex1 = proj1.pointArray[(i+1)%3].x;
                 }
 
                 if(linex1 < x && x < linex2){
                     //it is within
                     //push coord to newPoints
-                    newPoints.push(new point2D(round(x,3), round(y,3)));
+                    newPoints.add(new point2(x,y));
                 }
 
                 // projArray
 
-                tempSlope1 = (proj2[(pointsOutside[0] + shift) % 3].y - proj2[(pointsOutside[0] + 1 + shift) % 3].y) /
-                        (proj2[(pointsOutside[0] + shift) % 3].x - proj2[(pointsOutside[0] + 1 + shift) % 3].x);
+                tempSlope = (proj2.pointArray[(pointsOutside.get(0).intValue() + shift) % 3].y - proj2.pointArray[(pointsOutside.get(0).intValue() + 1 + shift) % 3].y) /
+                            (proj2.pointArray[(pointsOutside.get(0).intValue() + shift) % 3].x - proj2.pointArray[(pointsOutside.get(0).intValue() + 1 + shift) % 3].x);
 
-                if(tempSlope1 == Number.POSITIVE_INFINITY){
-                    tempSlope1 = 1000;
+                if(tempSlope > 1000){
+                    tempSlope = 1000;
                 }
-                else if(tempSlope1 == Number.NEGATIVE_INFINITY){
-                    tempSlope1 = -1000;
+                else if(tempSlope < -1000){
+                    tempSlope = -1000;
                 }
 
-                var x2 = ((slope1 * proj1[i].x) - ((tempSlope1 * proj2[(pointsOutside[0] + shift) % 3].x) + (proj1[i].y - proj2[(pointsOutside[0] + shift) % 3].y))) / (slope1 - tempSlope1);
+                double x2 = ((slope * proj1.pointArray[i].x) - ((tempSlope * proj2.pointArray[(pointsOutside.get(0).intValue() + shift) % 3].x) + (proj1.pointArray[i].y - proj2.pointArray[(pointsOutside.get(0).intValue() + shift) % 3].y))) / (slope - tempSlope);
 
-                var y2 = slope1 * (x2 - proj1[i].x) + proj1[i].y;
+                double y2 = slope * (x2 - proj1.pointArray[i].x) + proj1.pointArray[i].y;
 
                 if(linex1 < x2 && x2 < linex2){
                     //it is within
                     //push coord to newPoints
-                    newPoints.push(new point2D(round(x2,3), round(y2,3)));
+                    newPoints.add(new point2(x,y));
 
                 }
 
 
-                if(pointsOutside.length == 1){
-                    pointsO.splice(pointsOutside[0], 1, 0);
+                if(pointsOutside.size() == 1){
+                    originalPoints.remove(pointsOutside.get(0).intValue());
                 }
-                else if(pointsOutside.length == 2){
-                    pointsO.splice(pointsOutside[0], 1, 0);
-                    pointsO.splice(pointsOutside[1], 1, 0);
+                else if(pointsOutside.size() == 2){
+                    originalPoints.remove(pointsOutside.get(0).intValue());
+                    originalPoints.remove(pointsOutside.get(1).intValue());
                 }
-                for(var j = 0; j < pointsOutside.length; j++){
-                    pointsOutside.splice(0,1);
-                }
+                //empties array in js - not needed in java
+//                for(int j = 0; j < pointsOutside.size(); j++){
+//                    pointsOutside.splice(0,1);
+//                }
 
                 // printLog(newPoints);
                 // printLog(pointsO);
@@ -442,8 +543,86 @@ public class Render extends draw{
 
     }
 
-    private boolean compareTri(Tri tri1, Tri tri2){
+    private class Component{
+        double t;
+        double c;
 
+        private Component(double c, double t){
+            this.t = t;
+            this.c = c;
+        }
+    }
+
+    private boolean compareTri(Tri tri1, Tri tri2, point3 inside){
+        //find intersection
+        //https://www.google.com/search?q=find+intersection+of+plane+and+line+(vector+form)&oq=find+intersection+of+plane+and+line+(vector+form)&aqs=chrome..69i57.24125j0j1&sourceid=chrome&ie=UTF-8#kpvalbx=1
+        //(15,15,-100)
+        //(result, 0)
+
+        //parametric  for line
+
+        // var p1 = new point3D(15,15,-100);
+        // var p2 = new point3D(inside.x,inside.y,0);
+
+        Tri[] selector = new Tri[]{tri1,tri2};
+
+
+        point3 p1 = new point3(15,15,-100);
+        point3 p2 = new point3(inside.x,inside.y,0);
+
+        Component xComp = new Component(p1.x, (p2.x - p1.x));
+        Component yComp = new Component(p1.y, (p2.y - p1.y));
+        Component zComp = new Component(p1.z, (p2.z - p1.z));
+
+        double zDepth1 = 0;
+        double zDepth2 = 0;
+
+        for(int i = 0; i < 2; i++){
+
+            point3 p3 = new point3(selector[i].pointArray[0].x,
+                                   selector[i].pointArray[0].y,
+                                   selector[i].pointArray[0].z);
+            point3 p4 = new point3(selector[i].pointArray[1].x,
+                                   selector[i].pointArray[1].y,
+                                   selector[i].pointArray[1].z);
+            point3 p5 = new point3(selector[i].pointArray[2].x,
+                                   selector[i].pointArray[2].y,
+                                   selector[i].pointArray[2].z);
+
+
+            //plane
+            Vector vector1 = new Vector(p4.x - p3.x, p4.y - p3.y, p4.z - p3.z);
+            Vector vector2 = new Vector(p5.x - p5.x, p4.y - p3.y, p5.z - p3.z);
+
+            //normal
+            Vector normalVec = Vector.normal(selector[i].pointArray[0], selector[i].pointArray[1], selector[i].pointArray[2]);
+
+
+            //plane constant
+            double d = normalVec.i * (xComp.c - p3.x) +
+                       normalVec.j * (yComp.c - p3.y) +
+                       normalVec.k * (zComp.c - p3.z);
+
+            //calculate T
+            double t = -d / (normalVec.i * xComp.t +
+                             normalVec.j * yComp.t +
+                             normalVec.k * zComp.t);
+
+            if(i == 0){
+                zDepth1 = zComp.c + zComp.t * t;
+            }
+            else{
+                zDepth2 = zComp.c + zComp.t * t;
+            }
+
+        }
+
+        if(zDepth1 > zDepth2){
+            return false;
+        }
+        else{
+            return true;
+        }
     }
 
 }
