@@ -265,32 +265,33 @@ public class Render extends draw{
 
     }
 
-    private ArrayList<projTri> orderTri (ArrayList<projTri>, ArrayList<Tri>){
+    private ArrayList<projTri> orderTri (ArrayList<projTri> arr, ArrayList<Tri> original){
 
         //array of tris
         //calculate tri projections
         //projArray is an array of projectedTris
-        var projArray = [];
-        var finalArray = [];
-        for(var i = 0; i < arr.length; i++){
-            projArray[i] = new projectedTri(new point2D(), new point2D(), new point2D());
+        ArrayList<projTri> projArray = new ArrayList<>();
+        ArrayList<projTri> finalArray = new ArrayList<>();
 
-            for(var j = 0; j <3; j++){
-                projArray[i].pointArray[j].x = simpleCalcXZ(arr[i].pointArray[j].x + center.x,
-                        arr[i].pointArray[j].z + center.z);
-            }
+//        for(int i = 0; i < arr.size(); i++){
+//            projArray.add(new projTri(new point2(0,0), new point2(0,0), new point2(0,0)));
+//
+//            for(int j = 0; j <3; j++){
+//                projArray[i].pointArray[j].x = simpleCalcXZ(arr[i].pointArray[j].x + center.x,
+//                        arr[i].pointArray[j].z + center.z);
+//            }
+//
+//            for(int j = 0; j <3; j++){
+//                projArray[i].pointArray[j].y = simpleCalcYZ(arr[i].pointArray[j].y + center.y,
+//                        arr[i].pointArray[j].z + center.z);
+//            }
+//
+//        }
 
-            for(var j = 0; j <3; j++){
-                projArray[i].pointArray[j].y = simpleCalcYZ(arr[i].pointArray[j].y + center.y,
-                        arr[i].pointArray[j].z + center.z);
-            }
-
-        }
 
 
-
-        for(var i = 0; i < arr.length; i++){
-            for(var j = i; j< arr.length; j++){
+        for(int i = 0; i < arr.size(); i++){
+            for(int j = i; j< arr.size(); j++){
 
                 // console.log(arr[i].color + " and " + arr[j].color);
                 if(j == i){
@@ -298,42 +299,40 @@ public class Render extends draw{
                 }
 
 
-                var inside = isInside(projArray[i].pointArray, projArray[j].pointArray);
+                ArrayList<point2> inside = isInside(projArray.get(i), projArray.get(j));
 
-                if(inside.length == 0){
-                    inside = isInside(projArray[j].pointArray, projArray[i].pointArray);
+                if(inside.size() == 0){
+                    inside = isInside(projArray.get(j), projArray.get(i));
                 }
 
-                if(inside.length == 0){
-                    var points = clippedPoints(projArray[i].pointArray, projArray[j].pointArray);
-                    var testPoints = [];
-                    samePoints(points, projArray[i].pointArray, testPoints);
+                if(inside.size() == 0){
+
+                    ArrayList<point2> points = clippedPoints(projArray.get(i), projArray.get(j));
+                    ArrayList<point2> samePoints = samePoints(points, projArray.get(i).pointArray);
 
 
 
-                    if(points.length == 0|| testPoints.length == points.length){
+                    if(points.size() == 0|| samePoints.size() == points.size()){
                         // console.log("no intersect");
-                        averageZ1 = averageZ(arr[i].pointArray[0].z,
-                                arr[i].pointArray[1].z,
-                                arr[i].pointArray[2].z);
-                        averageZ2 = averageZ(arr[j].pointArray[0].z,
-                                arr[j].pointArray[1].z,
-                                arr[j].pointArray[2].z);
+                        double averageZ1 = averageZ(original.get(i).pointArray[0].z,
+                                                    original.get(i).pointArray[1].z,
+                                                    original.get(i).pointArray[2].z);
+                        double averageZ2 = averageZ(original.get(j).pointArray[0].z,
+                                                    original.get(j).pointArray[1].z,
+                                                    original.get(j).pointArray[2].z);
 
                         if(averageZ1 > averageZ2){
-
-
                             continue;
                         }
                         else{
 
-                            var temp = arr[i];
-                            arr[i] = arr[j];
-                            arr[j] = temp;
+                            Tri temp = original.get(i);
+                            original.set(i, original.get(j));
+                            original.set(j, temp);
 
-                            temp = projArray[i];
-                            projArray[i] = projArray[j];
-                            projArray[j] = temp;
+                            projTri projTemp = projArray.get(i);
+                            projArray.set(i, projArray.get(j));
+                            projArray.set(j,  projTemp);
                             continue;
                         }
                     }
@@ -624,5 +623,29 @@ public class Render extends draw{
             return true;
         }
     }
+
+
+
+    private ArrayList<point2> samePoints(ArrayList<point2> pArray1, point2[] pArray2){
+
+        ArrayList<point2> output = new ArrayList<>();
+
+        for(int j = 0; j < pArray1.size(); j++){
+            for(int i = 0; i < pArray2.length; i++){
+
+                if(0.01 > Math.abs(pArray1.get(j).x - pArray2[i].x)){
+                    //x check
+                    if(0.01 > Math.abs(pArray1.get(j).y - pArray2[i].y)){
+                        //y check
+                        output.add(new point2(pArray1.get(j).x , pArray1.get(j).y));
+                    }
+                }
+            }
+        }
+        return output;
+    }
+
+
+
 
 }

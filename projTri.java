@@ -13,6 +13,12 @@ public class projTri {
         triColor = d;
     }
 
+    public projTri(point2 a, point2 b, point2 c){
+        pointArray[0] = a;
+        pointArray[1] = b;
+        pointArray[2] = c;
+    }
+
     public ArrayList<point2> cpyArr(){
         ArrayList<point2> tempCpy = new ArrayList<>();
         tempCpy.add(pointArray[0].clone());
