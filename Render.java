@@ -1,4 +1,5 @@
 import java.awt.*;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 
@@ -17,7 +18,7 @@ public class Render extends draw{
 
     //renderPoly takes in a poly number
     //outputs finished poly rotation and translation
-    public Poly RenderPoly(int PolyNumber, Graphics d){
+    public void RenderPoly(int PolyNumber, Graphics d){
 
 //        if(PolyNumber == 1){
 //            System.out.println("bepis");
@@ -166,9 +167,7 @@ public class Render extends draw{
 
         ArrayList<projTri> a = renderTri(TransformedTri);
         super.loaded.addAll(loadWireFrame(a));
-
-        return p;
-
+        
     }
 
     public ArrayList<loadedTri> loadWireFrame(ArrayList<projTri> projTris){
@@ -271,8 +270,6 @@ public class Render extends draw{
         //calculate tri projections
         //projArray is an array of projectedTris
         ArrayList<projTri> projArray = new ArrayList<>();
-        ArrayList<projTri> finalArray = new ArrayList<>();
-
 //        for(int i = 0; i < arr.size(); i++){
 //            projArray.add(new projTri(new point2(0,0), new point2(0,0), new point2(0,0)));
 //
@@ -308,16 +305,18 @@ public class Render extends draw{
                 if(inside.size() == 0){
 
                     ArrayList<point2> points = clippedPoints(projArray.get(i), projArray.get(j));
-                    ArrayList<point2> samePoints = samePoints(points, projArray.get(i).pointArray);
+
+                    point2 pointsArray[] = points.toArray(new point2[points.size()]);
+                    ArrayList<point2> samePoints = samePoints(pointsArray, projArray.get(i).pointArray);
 
 
 
                     if(points.size() == 0|| samePoints.size() == points.size()){
                         // console.log("no intersect");
-                        double averageZ1 = averageZ(original.get(i).pointArray[0].z,
+                        double averageZ1 = average3(original.get(i).pointArray[0].z,
                                                     original.get(i).pointArray[1].z,
                                                     original.get(i).pointArray[2].z);
-                        double averageZ2 = averageZ(original.get(j).pointArray[0].z,
+                        double averageZ2 = average3(original.get(j).pointArray[0].z,
                                                     original.get(j).pointArray[1].z,
                                                     original.get(j).pointArray[2].z);
 
@@ -337,38 +336,37 @@ public class Render extends draw{
                         }
                     }
 
-                    samePoints(projArray[i].pointArray, projArray[j].pointArray,points);
-                    var result = new point2D(averageArray(points, 'x'),
-                            averageArray(points, 'y'));
-                    printLog(result);
-                    inside[0] = result;
+                    samePoints(projArray.get(i).pointArray, projArray.get(j).pointArray);
+                    point2 result = averagePoints(points);
+                    inside.set(0, result);
                 }
-                else{
-                    printLog(inside);
-                }
+//                else{
+//                    printLog(inside);
+//                }
 
 
 
-                var result = compareTri(arr[i],arr[j],inside[0],center);
+                boolean result = compareTri(original.get(i),original.get(j),inside.get(0));
 
-                if(result == 0){
+                if(result == false){
                     continue;
                 }
                 else{
-                    var temp = arr[i];
-                    arr[i] = arr[j];
-                    arr[j] = temp;
 
-                    temp = projArray[i];
-                    projArray[i] = projArray[j];
-                    projArray[j] = temp;
+                    Tri temp = original.get(i);
+                    original.set(i, original.get(j));
+                    original.set(j, temp);
+
+                    projTri projTemp = projArray.get(i);
+                    projArray.set(i, projArray.get(j));
+                    projArray.set(j,  projTemp);
                     continue;
                 }
 
             }
         }
 
-        return arr;
+        return projArray;
 
 
     }
@@ -552,7 +550,7 @@ public class Render extends draw{
         }
     }
 
-    private boolean compareTri(Tri tri1, Tri tri2, point3 inside){
+    private boolean compareTri(Tri tri1, Tri tri2, point2 inside){
         //find intersection
         //https://www.google.com/search?q=find+intersection+of+plane+and+line+(vector+form)&oq=find+intersection+of+plane+and+line+(vector+form)&aqs=chrome..69i57.24125j0j1&sourceid=chrome&ie=UTF-8#kpvalbx=1
         //(15,15,-100)
@@ -626,23 +624,45 @@ public class Render extends draw{
 
 
 
-    private ArrayList<point2> samePoints(ArrayList<point2> pArray1, point2[] pArray2){
+    private ArrayList<point2> samePoints(point2[] pArray1, point2[] pArray2){
 
         ArrayList<point2> output = new ArrayList<>();
 
-        for(int j = 0; j < pArray1.size(); j++){
+        for(int j = 0; j < pArray1.length; j++){
             for(int i = 0; i < pArray2.length; i++){
 
-                if(0.01 > Math.abs(pArray1.get(j).x - pArray2[i].x)){
+                if(0.01 > Math.abs(pArray1[j].x - pArray2[i].x)){
                     //x check
-                    if(0.01 > Math.abs(pArray1.get(j).y - pArray2[i].y)){
+                    if(0.01 > Math.abs(pArray1[j].y - pArray2[i].y)){
                         //y check
-                        output.add(new point2(pArray1.get(j).x , pArray1.get(j).y));
+                        output.add(new point2(pArray1[j].x , pArray1[j].y));
                     }
                 }
             }
         }
         return output;
+    }
+
+    private double average3(double n1, double n2, double n3){
+        return (n1 + n2 + n3)/3;
+    }
+
+    private point2 averagePoints(ArrayList<point2> points){
+        double x = 0;
+        double y = 0;
+        //x average
+        for(int i = 0; i < points.size(); i++){
+            x += points.get(i).x;
+        }
+        x /= points.size();
+
+        //y average
+        for(int i = 0; i < points.size(); i++){
+            y += points.get(i).y;
+        }
+        y /= points.size();
+
+        return new point2(x,y);
     }
 
 
