@@ -187,8 +187,9 @@ public class draw extends JPanel implements ActionListener, model, KeyListener, 
 //        Poly b = r.RenderPoly(1,g);
 //        r.RenderPoly(2,g);
 
+
         for(int i = 0; i < p1.size(); i++){
-            r.RenderPoly(i,g);
+            r.RenderPoly(i);
         }
 
         x += 2;

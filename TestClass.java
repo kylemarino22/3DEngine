@@ -8,6 +8,8 @@ public class TestClass implements model{
 
     Render r = new Render(p1, cam);
 
-
+//    public void orderLoaded(){
+//
+//    }
 
 }
