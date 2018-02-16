@@ -7,6 +7,18 @@ public class Main {
 
     public static void main(String[] args) {
 
+
+
+
+        projTri c = new projTri(new point2(-1.72,1), new point2(0.82,4.34), new point2(1.98,1.92));
+        projTri b = new projTri(new point2(4.37,1.53), new point2(-1.56,3.56), new point2(0.88,1.39));
+
+        ArrayList<point2> m = OrderTri.clippedPoints(c,b);
+
+        for(int i = 0; i < m.size(); i++){
+            System.out.println(m.get(i).toString());
+        }
+
         draw a = new draw();
 
         a.setup();

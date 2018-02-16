@@ -2,12 +2,12 @@ import java.util.ArrayList;
 
 public class OrderTri {
 
-    public static ArrayList<projTri> orderTri (ArrayList<projTri> arr, ArrayList<Tri> original){
+    public static ArrayList<projTri> orderTri (ArrayList<projTri> projArray, ArrayList<Tri> original){
 
         //array of tris
         //calculate tri projections
         //projArray is an array of projectedTris
-        ArrayList<projTri> projArray = new ArrayList<>();
+//        ArrayList<projTri> projArray = new ArrayList<>();
 //        for(int i = 0; i < arr.size(); i++){
 //            projArray.add(new projTri(new point2(0,0), new point2(0,0), new point2(0,0)));
 //
@@ -25,8 +25,8 @@ public class OrderTri {
 
 
 
-        for(int i = 0; i < arr.size(); i++){
-            for(int j = i; j< arr.size(); j++){
+        for(int i = 0; i < projArray.size(); i++){
+            for(int j = i; j< projArray.size(); j++){
 
                 // console.log(arr[i].color + " and " + arr[j].color);
                 if(j == i){
@@ -34,7 +34,8 @@ public class OrderTri {
                 }
 
 
-                ArrayList<point2> inside = isInside(projArray.get(i), projArray.get(j));
+                ArrayList<point2> inside = isInside(projArray.get(i),
+                        projArray.get(j));
 
                 if(inside.size() == 0){
                     inside = isInside(projArray.get(j), projArray.get(i));
@@ -76,7 +77,9 @@ public class OrderTri {
 
                     samePoints(projArray.get(i).pointArray, projArray.get(j).pointArray);
                     point2 result = averagePoints(points);
-                    inside.set(0, result);
+//                    System.out.println(result.toString());
+//                    inside.get(0);
+                    inside.add(result);
                 }
 //                else{
 //                    printLog(inside);
@@ -146,12 +149,12 @@ public class OrderTri {
     }
 
 
-    private static ArrayList<point2> clippedPoints(projTri proj1, projTri proj2){
+    public static ArrayList<point2> clippedPoints(projTri proj1, projTri proj2){
         ArrayList<point2> originalPoints = proj2.cpyArr();
         ArrayList<point2> newPoints = new ArrayList<>();
 
         point2 cent1 = new point2((proj1.pointArray[0].x + proj1.pointArray[1].x + proj1.pointArray[2].x)/3,
-                (proj1.pointArray[0].y + proj1.pointArray[1].y + proj1.pointArray[2].y)/3);
+                                  (proj1.pointArray[0].y + proj1.pointArray[1].y + proj1.pointArray[2].y)/3);
 
         for(int i = 0; i < 3; i++){
 
@@ -195,7 +198,7 @@ public class OrderTri {
                 //original -1,  original+1 plus 2
 
                 double tempSlope = (proj2.pointArray[pointsOutside.get(0)].y - proj2.pointArray[(pointsOutside.get(0) +2) % proj2.pointArray.length].y) /
-                        (proj2.pointArray[pointsOutside.get(0)].x - proj2.pointArray[(pointsOutside.get(0) +2) % proj2.pointArray.length].x);
+                                   (proj2.pointArray[pointsOutside.get(0)].x - proj2.pointArray[(pointsOutside.get(0) +2) % proj2.pointArray.length].x);
 
                 if(tempSlope > 1000){
                     tempSlope = 1000;
@@ -229,7 +232,7 @@ public class OrderTri {
                 // projArray
 
                 tempSlope = (proj2.pointArray[(pointsOutside.get(0) + shift) % 3].y - proj2.pointArray[(pointsOutside.get(0) + 1 + shift) % 3].y) /
-                        (proj2.pointArray[(pointsOutside.get(0) + shift) % 3].x - proj2.pointArray[(pointsOutside.get(0) + 1 + shift) % 3].x);
+                            (proj2.pointArray[(pointsOutside.get(0) + shift) % 3].x - proj2.pointArray[(pointsOutside.get(0) + 1 + shift) % 3].x);
 
                 if(tempSlope > 1000){
                     tempSlope = 1000;
@@ -249,14 +252,30 @@ public class OrderTri {
 
                 }
 
-
+                System.out.println("here" + i);
                 if(pointsOutside.size() == 1){
                     originalPoints.remove(pointsOutside.get(0).intValue());
                 }
                 else if(pointsOutside.size() == 2){
+                    //horribly inefficient
+                    System.out.println(pointsOutside.get(0));
+                    System.out.println(pointsOutside.get(1));
+                    System.out.println(originalPoints.size());
+
                     originalPoints.remove(pointsOutside.get(0).intValue());
                     originalPoints.remove(pointsOutside.get(1).intValue());
+
+
+//                    if(pointsOutside.get(0) > pointsOutside.get(1)){
+//                        originalPoints.remove(pointsOutside.get(1).intValue());
+//                        originalPoints.remove(pointsOutside.get(0).intValue());
+//                    }
+//                    else{
+//
+//                    }
+
                 }
+//                pointsOutside.clear();
                 //empties array in js - not needed in java
 //                for(int j = 0; j < pointsOutside.size(); j++){
 //                    pointsOutside.splice(0,1);
