@@ -175,7 +175,6 @@ public class OrderTri {
                     //operator is switched to check if point is outside triangle region
                     if(-0.1 < slope * (proj2.pointArray[j].x - proj1.pointArray[i].x) + proj1.pointArray[i].y - proj2.pointArray[j].y){
                         //the point is outside the line
-                        System.out.println("here1 " + j);
                         pointsOutside.add(j);
                     }
                 }
@@ -186,7 +185,6 @@ public class OrderTri {
                     //operator is switched to check if point is outside triangle region
                     if(0.1 > slope * (proj2.pointArray[j].x - proj1.pointArray[i].x) + proj1.pointArray[i].y - proj2.pointArray[j].y){
                         //the point is outside the line
-                        System.out.println("here2 " + j);
                         pointsOutside.add(j);
                     }
                 }
@@ -197,7 +195,6 @@ public class OrderTri {
 
 
                 int shift = pointsOutside.size() - 1;
-                System.out.println("shift " + shift);
 
 
                 // original plus +/- 1
@@ -206,7 +203,6 @@ public class OrderTri {
                 double tempSlope = (proj2.pointArray[pointsOutside.get(0)].y - proj2.pointArray[(pointsOutside.get(0) +2) % proj2.pointArray.length].y) /
                                    (proj2.pointArray[pointsOutside.get(0)].x - proj2.pointArray[(pointsOutside.get(0) +2) % proj2.pointArray.length].x);
 
-                System.out.println("tempSlope " + tempSlope);
                 if(tempSlope > 1000){
                     tempSlope = 1000;
                 }
@@ -233,7 +229,6 @@ public class OrderTri {
                 if(linex1 < x && x < linex2){
                     //it is within
                     //push coord to newPoints
-                    System.out.println("New point " + x + " " + y);
                     newPoints.add(new point2(x,y));
                 }
 
@@ -253,7 +248,6 @@ public class OrderTri {
 
                 double y2 = slope * (x2 - proj1.pointArray[i].x) + proj1.pointArray[i].y;
 
-                System.out.println("x2 y2 thingy " + x2 + " " + y2);
 
                 if(linex1 < x2 && x2 < linex2){
                     //it is within
@@ -262,7 +256,6 @@ public class OrderTri {
 
                 }
 
-                System.out.println("here" + i);
 //                if(pointsOutside.size() == 1){
 //                    originalPoints.remove(pointsOutside.get(0).intValue());
 //                }
