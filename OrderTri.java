@@ -156,12 +156,15 @@ public class OrderTri {
         point2 cent1 = new point2((proj1.pointArray[0].x + proj1.pointArray[1].x + proj1.pointArray[2].x)/3,
                                   (proj1.pointArray[0].y + proj1.pointArray[1].y + proj1.pointArray[2].y)/3);
 
+
+
         for(int i = 0; i < 3; i++){
 
             //stores array location of outside points
             ArrayList<Integer> pointsOutside = new ArrayList<>();
             //slope of two points from proj1
             double slope = (proj1.pointArray[i].y - proj1.pointArray[(i+1)%3].y)/(proj1.pointArray[i].x - proj1.pointArray[(i+1)%3].x);
+
 
 
             if(cent1.y > slope * (cent1.x - proj1.pointArray[i].x) + proj1.pointArray[i].y){
@@ -172,6 +175,7 @@ public class OrderTri {
                     //operator is switched to check if point is outside triangle region
                     if(-0.1 < slope * (proj2.pointArray[j].x - proj1.pointArray[i].x) + proj1.pointArray[i].y - proj2.pointArray[j].y){
                         //the point is outside the line
+                        System.out.println("here1 " + j);
                         pointsOutside.add(j);
                     }
                 }
@@ -182,6 +186,7 @@ public class OrderTri {
                     //operator is switched to check if point is outside triangle region
                     if(0.1 > slope * (proj2.pointArray[j].x - proj1.pointArray[i].x) + proj1.pointArray[i].y - proj2.pointArray[j].y){
                         //the point is outside the line
+                        System.out.println("here2 " + j);
                         pointsOutside.add(j);
                     }
                 }
@@ -192,6 +197,7 @@ public class OrderTri {
 
 
                 int shift = pointsOutside.size() - 1;
+                System.out.println("shift " + shift);
 
 
                 // original plus +/- 1
@@ -200,6 +206,7 @@ public class OrderTri {
                 double tempSlope = (proj2.pointArray[pointsOutside.get(0)].y - proj2.pointArray[(pointsOutside.get(0) +2) % proj2.pointArray.length].y) /
                                    (proj2.pointArray[pointsOutside.get(0)].x - proj2.pointArray[(pointsOutside.get(0) +2) % proj2.pointArray.length].x);
 
+                System.out.println("tempSlope " + tempSlope);
                 if(tempSlope > 1000){
                     tempSlope = 1000;
                 }
@@ -226,6 +233,7 @@ public class OrderTri {
                 if(linex1 < x && x < linex2){
                     //it is within
                     //push coord to newPoints
+                    System.out.println("New point " + x + " " + y);
                     newPoints.add(new point2(x,y));
                 }
 
@@ -245,6 +253,8 @@ public class OrderTri {
 
                 double y2 = slope * (x2 - proj1.pointArray[i].x) + proj1.pointArray[i].y;
 
+                System.out.println("x2 y2 thingy " + x2 + " " + y2);
+
                 if(linex1 < x2 && x2 < linex2){
                     //it is within
                     //push coord to newPoints
@@ -253,28 +263,28 @@ public class OrderTri {
                 }
 
                 System.out.println("here" + i);
-                if(pointsOutside.size() == 1){
-                    originalPoints.remove(pointsOutside.get(0).intValue());
-                }
-                else if(pointsOutside.size() == 2){
-                    //horribly inefficient
-                    System.out.println(pointsOutside.get(0));
-                    System.out.println(pointsOutside.get(1));
-                    System.out.println(originalPoints.size());
-
-                    originalPoints.remove(pointsOutside.get(0).intValue());
-                    originalPoints.remove(pointsOutside.get(1).intValue());
-
-
-//                    if(pointsOutside.get(0) > pointsOutside.get(1)){
-//                        originalPoints.remove(pointsOutside.get(1).intValue());
-//                        originalPoints.remove(pointsOutside.get(0).intValue());
-//                    }
-//                    else{
+//                if(pointsOutside.size() == 1){
+//                    originalPoints.remove(pointsOutside.get(0).intValue());
+//                }
+//                else if(pointsOutside.size() == 2){
+//                    //horribly inefficient
+//                    System.out.println(pointsOutside.get(0));
+//                    System.out.println(pointsOutside.get(1));
+//                    System.out.println(originalPoints.size());
 //
-//                    }
-
-                }
+//                    originalPoints.remove(pointsOutside.get(0).intValue());
+//                    originalPoints.remove(pointsOutside.get(1).intValue());
+//
+//
+////                    if(pointsOutside.get(0) > pointsOutside.get(1)){
+////                        originalPoints.remove(pointsOutside.get(1).intValue());
+////                        originalPoints.remove(pointsOutside.get(0).intValue());
+////                    }
+////                    else{
+////
+////                    }
+//
+//                }
 //                pointsOutside.clear();
                 //empties array in js - not needed in java
 //                for(int j = 0; j < pointsOutside.size(); j++){
