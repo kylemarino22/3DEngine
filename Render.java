@@ -17,7 +17,24 @@ public class Render extends draw{
 
     //renderPoly takes in a poly number
     //outputs finished poly rotation and translation
-    public void RenderPoly(int PolyNumber){
+
+    public void renderAll(ArrayList<Poly> polyArray){
+        ArrayList<Tri> TransformedTris = new ArrayList<>();
+
+        for(int i = 0; i < p1.size(); i++){
+            TransformedTris.addAll(RenderPoly(i));
+        }
+
+        TransformedTris = frustumCulling(TransformedTris);
+
+        ArrayList<projTri> renderedTris = renderTri(TransformedTris);
+
+        OrderTri.orderTri(renderedTris, TransformedTris);
+        super.loaded.addAll(loadWireFrame(renderedTris));
+
+    }
+
+    private ArrayList<Tri> RenderPoly(int PolyNumber){
 
 //        if(PolyNumber == 1){
 //            System.out.println("bepis");
@@ -161,13 +178,8 @@ public class Render extends draw{
             }
         }
 
+        return TransformedTri;
 
-        TransformedTri = frustumCulling(TransformedTri);
-
-        ArrayList<projTri> renderedTris = renderTri(TransformedTri);
-
-        OrderTri.orderTri(renderedTris, TransformedTri);
-        super.loaded.addAll(loadWireFrame(renderedTris));
 
     }
 
@@ -180,7 +192,7 @@ public class Render extends draw{
 
             int[] a = {0,0,0,0};
             int[] b = {0,0,0,0};
-            loaded.add(new loadedTri(a,b));
+            loaded.add(new loadedTri(a,b,Color.blue));
 
             for(int j = 0; j < 3; j++){
                 loaded.get(i).x[j] = (int) (300 + projTris.get(i).pointArray[j].x * 26.6);
@@ -189,6 +201,7 @@ public class Render extends draw{
 
             loaded.get(i).x[3] = (int) (300 + projTris.get(i).pointArray[0].x * 26.6);
             loaded.get(i).y[3] = (int) (800 - (projTris.get(i).pointArray[0].y * 26.6));
+            loaded.get(i).c = projTris.get(i).triColor;
 
 
 

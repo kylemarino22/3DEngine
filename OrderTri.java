@@ -25,24 +25,32 @@ public class OrderTri {
 
 
 
+        System.out.println(projArray.size());
         for(int i = 0; i < projArray.size(); i++){
+
+//            if(i == 1){
+//                throw new java.lang.Error("A");
+//            }
             for(int j = i; j< projArray.size(); j++){
 
                 // console.log(arr[i].color + " and " + arr[j].color);
+                System.out.println("asdfasdfa");
                 if(j == i){
                     continue;
                 }
 
 
-                ArrayList<point2> inside = isInside(projArray.get(i),
-                        projArray.get(j));
+                ArrayList<point2> inside = isInside(projArray.get(i), projArray.get(j));
+
+
 
                 if(inside.size() == 0){
+
                     inside = isInside(projArray.get(j), projArray.get(i));
                 }
 
                 if(inside.size() == 0){
-
+                    System.out.println("HERE DAd");
                     ArrayList<point2> points = clippedPoints(projArray.get(i), projArray.get(j));
 
                     point2 pointsArray[] = points.toArray(new point2[points.size()]);
@@ -51,13 +59,19 @@ public class OrderTri {
 
 
                     if(points.size() == 0|| samePoints.size() == points.size()){
-                        // console.log("no intersect");
+//                        System.out.println("no intersect");
                         double averageZ1 = average3(original.get(i).pointArray[0].z,
                                 original.get(i).pointArray[1].z,
                                 original.get(i).pointArray[2].z);
                         double averageZ2 = average3(original.get(j).pointArray[0].z,
                                 original.get(j).pointArray[1].z,
                                 original.get(j).pointArray[2].z);
+
+                        System.out.println("Averages");
+
+                        System.out.println(averageZ1);
+                        System.out.println(averageZ2);
+
 
                         if(averageZ1 > averageZ2){
                             continue;
@@ -89,8 +103,14 @@ public class OrderTri {
 
                 boolean result = compareTri(original.get(i),original.get(j),inside.get(0));
 
+                System.out.println("asdf " + compareTri(original.get(0),original.get(2),inside.get(0)));
+                System.out.println(original.get(0).triColor);
+                System.out.println(original.get(2).triColor);
+
+                System.out.println(result);
+
                 if(result == false){
-//                    continue;
+                    continue;
                 }
                 else{
 
@@ -101,7 +121,7 @@ public class OrderTri {
                     projTri projTemp = projArray.get(i);
                     projArray.set(i, projArray.get(j));
                     projArray.set(j,  projTemp);
-//                    continue;
+                    continue;
                 }
 
             }

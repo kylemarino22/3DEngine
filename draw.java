@@ -161,7 +161,8 @@ public class draw extends JPanel implements ActionListener, model, KeyListener, 
 
 
         for(int i = 0; i < loaded.size(); i++){
-            g2.drawPolyline(loaded.get(i).x, loaded.get(i).y, 4);
+            g.setColor(loaded.get(i).c);
+            g2.fillPolygon(loaded.get(i).x, loaded.get(i).y, 3);
         }
 
         g2.drawString("pitch: " + (cam.angle.p * 180/Math.PI), 0,11);
@@ -187,10 +188,7 @@ public class draw extends JPanel implements ActionListener, model, KeyListener, 
 //        Poly b = r.RenderPoly(1,g);
 //        r.RenderPoly(2,g);
 
-
-        for(int i = 0; i < p1.size(); i++){
-            r.RenderPoly(i);
-        }
+        r.renderAll(p1);
 
         x += 2;
 //        p1.get(0).center.x = x;
@@ -207,12 +205,18 @@ public class draw extends JPanel implements ActionListener, model, KeyListener, 
 
     public void setup(){
 
+
         t1.add(test1);
         t1.add(test2);
-        t1.add(test3);
-        t1.add(test4);
-        t1.add(test5);
-        t1.add(test6);
+
+        t2.add(test11);
+        t2.add(test12);
+
+
+//        t1.add(test3);
+//        t1.add(test4);
+//        t1.add(test5);
+//        t1.add(test6);
 
 //        t2.add(test1);
 //        t2.add(test2);
@@ -254,15 +258,16 @@ public class draw extends JPanel implements ActionListener, model, KeyListener, 
 
 
 
-        Poly brown = new Poly(t1, center2, angle2);
-        Poly kelek = new Poly(t1, center3, angle3);
-        Poly antiphot = new Poly(t1,center4, angle4 );
 
-        Poly testPoly = new Poly(t1, center, angle);
-        p1.add(testPoly);
+        Poly brown = new Poly(t1, center2, angle2);
+        Poly kelek = new Poly(t2, center3, angle3);
+//        Poly antiphot = new Poly(t1,center4, angle4 );
+//
+//        Poly testPoly = new Poly(t2, center, angle);
+//        p1.add(testPoly);
         p1.add(brown);
         p1.add(kelek);
-        p1.add(antiphot);
+//        p1.add(antiphot);
 
     }
 

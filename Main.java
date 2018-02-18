@@ -8,7 +8,7 @@ public class Main {
     public static void main(String[] args) {
 
 
-
+//        TestClass.test();
 
         projTri c = new projTri(new point2(-1.72,1), new point2(0.82,4.34), new point2(1.98,1.92));
         projTri b = new projTri(new point2(4.37,1.53), new point2(-1.56,3.56), new point2(0.88,1.39));
